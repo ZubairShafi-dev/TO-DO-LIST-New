@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+   <item
+       android:id="@+id/newThings"
+       android:title="New things"
+       android:icon="@drawable/outline_notifications_none_24"
+        />
+
+
+    <item
+        android:id="@+id/nav_task"
+        android:title="My Task"
+        android:icon="@drawable/baseline_dataset_24"
+        />
+
+
+</menu>

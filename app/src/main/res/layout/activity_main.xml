@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/drawer"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start"
+    android:background="@color/lightwhite"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#7BB0ED">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:elevation="24dp"
+            tools:ignore="MissingConstraints">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/baseline_menu_24"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <TextView
+                    android:id="@+id/tasks"
+                    android:layout_width="150dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/baseline_dataset_24"
+                    android:drawablePadding="5dp"
+                    android:padding="1dp"
+                    android:text="@string/custom_app_title"
+                    android:textSize="19dp"
+                    android:textStyle="bold" />
+
+
+                <Button
+                    android:id="@+id/AddBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:drawableBottom="@drawable/baseline_add_24"
+                    android:paddingBottom="12dp"
+                   />
+
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+
+            >
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="80dp"
+                />
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation"
+        android:layout_width="230dp"
+        android:layout_height="200dp"
+        android:layout_gravity="start|bottom"
+        android:fitsSystemWindows="true"
+        app:elevation="24dp"
+        app:headerLayout="@layout/header"
+         app:menu="@menu/navigation_items"
+        app:drawerLayoutCornerSize="10dp"
+        />
+
+
+</androidx.drawerlayout.widget.DrawerLayout>

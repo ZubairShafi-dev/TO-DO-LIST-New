@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TO-DO-LIST</string>
+    <string name="custom_app_title">My Tasks</string>
+    <string name="close">Close_Drawer</string>
+    <string name="open">open_drawer</string>
+    <string name="my_prefs">my_prefs</string>
+    <string name="fpass"><b>Forget password</b></string>
+</resources>

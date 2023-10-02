@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="bottom"
+    android:layout_height="wrap_content">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/crd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/stroke"
+        app:cardBackgroundColor ="@color/lightwhite"
+        android:layout_margin="10dp"
+       >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+          >
+
+            <EditText
+            android:id="@+id/tvTasks"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_toRightOf="@+id/myCheckBox"
+            android:background="@color/darkwhite"
+            android:drawableRight="@drawable/baseline_delete_24"
+            android:paddingRight="10dp"
+            android:clickable="true"
+            tools:ignore="Deprecated" />
+
+
+
+            <CheckBox
+                android:id="@+id/myCheckBox"
+                android:layout_width="55dp"
+                android:layout_height="55dp" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>
