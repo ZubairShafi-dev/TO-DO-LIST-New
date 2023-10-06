@@ -1,5 +1,6 @@
 package com.example.to_do_list;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,9 +20,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections; // Import Collections class
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     List<Modeltask> modeltaskList;
     TextView mytask,detailTxtview;
+
     AdapterUser adapterUser;
 
     @Override
@@ -54,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.RecyclerView);
         mytask = findViewById(R.id.tasks);
         setSupportActionBar(toolbar);
-        detailTxtview=findViewById(R.id.deatailTV);
+//        detailTxtview=findViewById(R.id.deatailTV);
+
+
 
         // Initialize SharedPref   // to check data is stored in sharedpref
         sharedPref = new SharedPref(getSharedPreferences("my_prefs", MODE_PRIVATE));
@@ -77,14 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, PopUpActivity1.class));
             }
         });
-//        ed.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////               Intent intent;
-////               intent.setContentView(R.layout.detail_popup);
-//                startActivity(new Intent(MainActivity.this,R.layout.detail_popup));
-//            }
-//        });
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.open, R.string.close
@@ -122,10 +121,6 @@ public class MainActivity extends AppCompatActivity {
         mytask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle the click on the "Add" button, e.g., open a dialog to add a task
-                // You can implement this functionality as per your requirements.
-                // After adding or saving a task, you can update the RecyclerView.
-
                 // Show or hide the RecyclerView based on your requirements
                 if (recyclerView.getVisibility() == View.VISIBLE) {
                     recyclerView.setVisibility(View.GONE); // Hide the RecyclerView
@@ -137,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 adapterUser.notifyDataSetChanged();
             }
         });
+
 
         // Initialize RecyclerView and adapter
         firestore = FirebaseFirestore.getInstance();
@@ -150,24 +146,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTasks() {
-        firestore.collection("tasks").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        modeltaskList.clear(); // Clear the list before adding data
-                        for (DocumentSnapshot document : task.getResult()) {
-                            Modeltask tasks = document.toObject(Modeltask.class);
-                            modeltaskList.add(tasks);
+        ModelUser user = sharedPref.getUser();
+        if (user != null) {
+            String userId = user.getId();
+            Toast.makeText(this, "User ID: " + userId, Toast.LENGTH_SHORT).show();
+            //Log.d("MainActivity", "User ID: " + userId); // Log the user ID for debugging
+
+            firestore.collection("tasks")
+                    .whereEqualTo("id", userId) // Use "userId" as the field name
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+
+                                modeltaskList.clear(); // Clear the list before adding data
+                                for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                                    Modeltask tasks = document.toObject(Modeltask.class);
+                                    String name=document.getString("id");
+                                    Toast.makeText(MainActivity.this, ""+name, Toast.LENGTH_SHORT).show();
+                                    modeltaskList.add(tasks);
+
+                                }
+
+                                // Reverse the order of tasks to show the latest on top
+                                Collections.reverse(modeltaskList);
+
+                                adapterUser.notifyDataSetChanged(); // Notify the adapter of data change
+
+                                Toast.makeText(MainActivity.this, "Tasks retrieved: " + modeltaskList.size(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Handle task failure
+                                Log.e("MainActivity", "Error getting task documents: ", task.getException());
+                                Toast.makeText(MainActivity.this, "Error getting tasks", Toast.LENGTH_SHORT).show();
+                            }
                         }
-
-                        // Reverse the order of tasks to show the latest on top
-                        Collections.reverse(modeltaskList);
-
-                        adapterUser.notifyDataSetChanged(); // Notify the adapter of data change
-                        Log.d("MainActivity", "Data retrieved successfully. Number of items: " + modeltaskList.size());
-                    } else {
-                        // Handle task failure
-                        Log.e("MainActivity", "Error getting task documents: ", task.getException());
-                    }
-                });
+                    });
+        } else {
+            // Handle the case when the user is null (not logged in)
+            // For example, you can redirect the user to the login screen
+            startActivity(new Intent(MainActivity.this, login.class));
+            finish(); // Finish the current activity to prevent going back to it
+        }
     }
+
+
+
+
+
 }

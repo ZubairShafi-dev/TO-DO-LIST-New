@@ -16,22 +16,20 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_margin="10dp"
-          >
-
-            <EditText
+            android:layout_margin="10dp">
+            <TextView
             android:id="@+id/tvTasks"
             android:layout_width="match_parent"
             android:layout_height="55dp"
+                android:text="task"
+                android:gravity="center|left"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:paddingLeft="15dp"
             android:layout_toRightOf="@+id/myCheckBox"
             android:background="@color/darkwhite"
-            android:drawableRight="@drawable/baseline_delete_24"
             android:paddingRight="10dp"
-            android:clickable="true"
-            tools:ignore="Deprecated" />
-
-
-
+            />
             <CheckBox
                 android:id="@+id/myCheckBox"
                 android:layout_width="55dp"

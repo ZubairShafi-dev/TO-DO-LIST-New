@@ -12,8 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class signup extends AppCompatActivity {
     FirebaseFirestore firestore;
@@ -25,13 +29,13 @@ public class signup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
         username=findViewById(R.id.UserName);
         email=findViewById(R.id.emailSignup);
         password=findViewById(R.id.password);
         confirmpassword=findViewById(R.id.confirmPassword);
         signupbtn=findViewById(R.id.signUpButton);
         firestore=FirebaseFirestore.getInstance();
-
 
 
         signupbtn.setOnClickListener(new View.OnClickListener() {
@@ -41,7 +45,7 @@ public class signup extends AppCompatActivity {
                 String Email = email.getText().toString();
                 String Password = password.getText().toString();
                 String ConfirmPassword = confirmpassword.getText().toString();
-                registeration(Username, Email, Password, ConfirmPassword);
+                registration(ConfirmPassword, Email, Password,Username );
             }
         });
 
@@ -49,8 +53,9 @@ public class signup extends AppCompatActivity {
 
     }
 
-    private void registeration(String Username, String Email, String Password, String ConfirmPassword) {
-        ModelUser modelUser = new ModelUser(Username, Email, Password, ConfirmPassword);
+    private void registration( String ConfirmPassword, String Email, String Password,String Username) {
+        ModelUser modelUser = new ModelUser(ConfirmPassword, Email,null, Password,Username );
+
         firestore.collection("users").whereEqualTo("email", Email).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -63,9 +68,27 @@ public class signup extends AppCompatActivity {
                             firestore.collection("users").add(modelUser)
                                     .addOnCompleteListener(registerTask -> {
                                         if (registerTask.isSuccessful()) {
-                                            Toast.makeText(signup.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(signup.this, login.class));
-                                            // Optionally, navigate to another screen or perform other actions
+                                            String documentId = registerTask.getResult().getId();
+                                            // Set the document ID in your ModelUser object
+                                            modelUser.setId(documentId);
+
+                                            // Now, update the user's document with the ID
+                                            firestore.collection("users").document(documentId)
+                                                    .set(modelUser)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Toast.makeText(signup.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(signup.this, login.class));
+                                                            // Optionally, navigate to another screen or perform other actions
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            Toast.makeText(signup.this, "Failed to update user data", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
                                         } else {
                                             Toast.makeText(signup.this, "Failed to register", Toast.LENGTH_SHORT).show();
                                         }
@@ -76,6 +99,7 @@ public class signup extends AppCompatActivity {
                     }
                 });
     }
+
 
 
 }

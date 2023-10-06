@@ -56,28 +56,29 @@ public class login extends AppCompatActivity {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         // Valid login
                         Toast.makeText(login.this, "Logged in", Toast.LENGTH_LONG).show();
-                        try {
-                            startActivity(new Intent(login.this, MainActivity.class));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(login.this, "Error opening MainActivity", Toast.LENGTH_SHORT).show();
-                        }
 
-                         String userId = task.getResult().getDocuments().get(0).getId();
-                         firestore.collection("users").document(userId).get().addOnCompleteListener(userTask -> {
+                        // Get the first document ID (assuming there's only one match)
+                        String userId = task.getResult().getDocuments().get(0).getId();
+
+                        // Save user data to SharedPref
+                        firestore.collection("users").document(userId).get().addOnCompleteListener(userTask -> {
                             if (userTask.isSuccessful() && userTask.getResult() != null) {
                                 DocumentSnapshot document = userTask.getResult();
                                 if (document.exists()) {
                                     ModelUser user = document.toObject(ModelUser.class);
                                     mypref.setUser(user);
+
+                                    // Start MainActivity
+                                    startActivity(new Intent(login.this, MainActivity.class));
+                                    finish(); // Finish the current login activity
                                 }
                             }
-                         });
+                        });
 
                     } else {
-
                         Toast.makeText(login.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }
